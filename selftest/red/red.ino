@@ -21,8 +21,8 @@ void setup() {
   pinMode(11, OUTPUT);
   pinMode(12, INPUT);
   pinMode(13, OUTPUT);
-  pinMode(PIN_SD_WP, INPUT);
-  pinMode(PIN_SD_CD, INPUT);  
+  pinMode(PIN_SD_WP, INPUT_PULLUP);
+  pinMode(PIN_SD_CD, INPUT_PULLUP);  
   pinMode(PIN_SERVO, OUTPUT);
   s.attach(PIN_SERVO);
   attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_A), isr_encoder, CHANGE);
@@ -75,7 +75,7 @@ void loop() {
   display.println(F("OLED teszt"));
   display.display();
 
-  bool cardPresent = digitalRead(PIN_SD_CD);
+  bool cardPresent = digitalRead(PIN_SD_CD) == LOW;
   bool cardWriteProtect = digitalRead(PIN_SD_WP);
   int temperature = analogRead(PIN_ADC_NTC);
   int light = analogRead(PIN_ADC_LIGHT);

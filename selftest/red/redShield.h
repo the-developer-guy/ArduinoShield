@@ -11,8 +11,8 @@
 #define PIN_SERVO     (5)
 
 #define PIN_SD_CS     (7)
-#define PIN_SD_CD     (7)
-#define PIN_SD_WP     (7)
+#define PIN_SD_CD     (10)
+#define PIN_SD_WP     (9)
 
 #define I2C_ADDR_EEPROM   (0x50)
 #define I2C_ADDR_VL53L0X  (0x29)
