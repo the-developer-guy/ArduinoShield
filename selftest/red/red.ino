@@ -63,49 +63,47 @@ void loop() {
   pulseCount = 0;
   s.write(adc >> 2);
 
-  if(textY > 25){
-    textY = 25;
+  if(textY > 31){
+    textY = 31;
   }
   else if(textY < 0){
     textY = 0;
   }
     
   display.clearDisplay();
-  display.setCursor(adc >> 4,textY);
-  display.println(F("OLED teszt"));
-  display.display();
+  display.setCursor(0,0);
 
   bool cardPresent = digitalRead(PIN_SD_CD) == LOW;
   bool cardWriteProtect = digitalRead(PIN_SD_WP);
   int temperature = analogRead(PIN_ADC_NTC);
   int light = analogRead(PIN_ADC_LIGHT);
 
-  Serial.print("Light: ");
-  Serial.print(light);
-  Serial.print("\ttemperature: ");
-  Serial.print(temperature);
-  Serial.print("\tLaser: ");
-  Serial.print(sensor.getDistance());
-  Serial.print("mm");
+  display.print("Light: ");
+  display.println(light);
+  display.print("temperature: ");
+  display.println(temperature);
+  display.print("Laser: ");
+  display.print(sensor.getDistance());
+  display.println("mm");
   if(cardPresent)
   {
-    Serial.print("\tSD card found, write protect:");
     if(cardWriteProtect)
     {
-      Serial.println("on");
+      display.println("write protected");
     }
     else
     {
-      Serial.println("off");
+      display.println("no write protect");
     }
   }
   else
   {
-    Serial.println("\tNo SD card");
+    display.println("No SD card");
   }
-  
+  display.drawLine(127, 31, 120, textY, SSD1306_WHITE);
+  display.display();
 
-  delay(200);
+  delay(10);
 }
 
 void isr_encoder(void){
