@@ -2,12 +2,14 @@
 #include <Servo.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include "DFRobot_VL53L0X.h"
 #include "redShield.h"
 #include "24AA02E48T.h"
 
 
 Servo s;
 Adafruit_SSD1306 display(128, 32, &Wire, -1);
+DFRobot_VL53L0X sensor;
 volatile int pulseCount = 0;
 int textY = 16;
 
@@ -19,6 +21,8 @@ void setup() {
   pinMode(11, OUTPUT);
   pinMode(12, INPUT);
   pinMode(13, OUTPUT);
+  pinMode(PIN_SD_WP, INPUT);
+  pinMode(PIN_SD_CD, INPUT);  
   pinMode(PIN_SERVO, OUTPUT);
   s.attach(PIN_SERVO);
   attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_A), isr_encoder, CHANGE);
@@ -45,6 +49,11 @@ void setup() {
     delay(1);
   }
   
+  sensor.begin(I2C_ADDR_VL53L0X);
+  sensor.setMode(sensor.eContinuous,sensor.eHigh);
+  sensor.start();
+  
+  
 }
 
 void loop() {
@@ -65,8 +74,38 @@ void loop() {
   display.setCursor(adc >> 4,textY);
   display.println(F("OLED teszt"));
   display.display();
+
+  bool cardPresent = digitalRead(PIN_SD_CD);
+  bool cardWriteProtect = digitalRead(PIN_SD_WP);
+  int temperature = analogRead(PIN_ADC_NTC);
+  int light = analogRead(PIN_ADC_LIGHT);
+
+  Serial.print("Light: ");
+  Serial.print(light);
+  Serial.print("\ttemperature: ");
+  Serial.print(temperature);
+  Serial.print("\tLaser: ");
+  Serial.print(sensor.getDistance());
+  Serial.print("mm");
+  if(cardPresent)
+  {
+    Serial.print("\tSD card found, write protect:");
+    if(cardWriteProtect)
+    {
+      Serial.println("on");
+    }
+    else
+    {
+      Serial.println("off");
+    }
+  }
+  else
+  {
+    Serial.println("\tNo SD card");
+  }
   
-  delay(10);
+
+  delay(200);
 }
 
 void isr_encoder(void){
